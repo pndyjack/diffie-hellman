@@ -14,20 +14,30 @@ pub fn secret(p: u64, b_pub: u64, a: u64) -> u64 {
   exponentiation(b_pub, a, p)
 }
 
-pub fn exponentiation(b: u64, e: u64, modulus: u64) -> u64 {
+pub fn exponentiation(base: u64, exponent: u64, modulus: u64) -> u64 {
   // Using binary exponentiation
   if modulus == 1 {
     return 0;
   }
-  let mut result = 1;
-  let mut base = b % modulus;
-  let mut exponent = e;
-  while exponent > 0 {
-    if exponent % 2 == 1 {
-      result = (result * base) % modulus;
-    }
-    exponent = exponent >> 1;
-    base = (base * base) % modulus;
+  let new_base = base % modulus;
+  if exponent > 0 {
+    compute_exponent(new_base, exponent, modulus, 1)
+  } else {
+    1
   }
-  result
+}
+
+pub fn compute_exponent(base: u64, exponent: u64, modulus: u64, result: u64) -> u64 {
+  let new_result = if exponent % 2 == 1 {
+    (result * base) % modulus
+  } else {
+    result
+  };
+  let shifted_exponent = exponent >> 1;
+  let new_base = (base * base) % modulus;
+  if shifted_exponent > 0 {
+    compute_exponent(new_base, shifted_exponent, modulus, new_result)
+  } else {
+    new_result
+  }
 }
